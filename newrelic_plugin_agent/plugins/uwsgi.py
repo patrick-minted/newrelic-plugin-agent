@@ -96,6 +96,9 @@ class uWSGI(base.SocketStatsPlugin):
         data = super(uWSGI, self).fetch_data(connection, read_till_empty=True)
         if data:
             data = re.sub(r'"HTTP_COOKIE=[^"]*"', '""', data)
-            return json.loads(data)
+            try:
+                return json.loads(data)
+            except ValueError as ve:
+                LOGGER.error("Failed to parse received JSON object: %s" % ve)
+                return {}
         return {}
-
